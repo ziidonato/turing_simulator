@@ -1,123 +1,83 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define NUM_STATES 5
 #define TAPE_SIZE 10
 
-enum direction {
-    LEFT = -1,
-    RIGHT = 1,
-    NONE = 0,
-    HALT = 2,
-};
-
-enum symbol {
-    ZERO = 0,
-    ONE = 1,
-};
-
-enum write {
-    WRITE_ZERO = 0,
-    WRITE_ONE = 1,
-    WRITE_BLANK = '_',
-};
-
-struct condition {
-    enum symbol read;
-    enum write write;
-    enum direction move;
-    int state;
-};
-
-struct state {
-    struct condition zero;
-    struct condition one;
+const State marxen_buntrock[6] = {
+    {
+     {ZERO, WRITE_ONE, LEFT, 1},
+     {ONE, WRITE_ONE, RIGHT, 2},
+     },
+    {
+     {ZERO, WRITE_ONE, LEFT, 2},
+     {ONE, WRITE_ONE, LEFT, 1},
+     },
+    {
+     {ZERO, WRITE_ONE, LEFT, 3},
+     {ONE, WRITE_ZERO, RIGHT, 4},
+     },
+    {
+     {ZERO, WRITE_ONE, RIGHT, 0},
+     {ONE, WRITE_ONE, RIGHT, 3},
+     },
+    {
+     {ZERO, WRITE_ONE, LEFT, 5},
+     {ONE, WRITE_ZERO, RIGHT, 0},
+     },
+    {
+     {ZERO, WRITE_ONE, HALT, 5},
+     {ONE, WRITE_ZERO, RIGHT, 0},
+     },
 };
 
 int main(int, char **)
 {
-    enum direction directions[] = {LEFT, RIGHT, NONE};
-    enum symbol symbols[] = {ZERO, ONE};
-    enum write writes[] = {WRITE_ZERO, WRITE_ONE, WRITE_BLANK};
-
-    struct state states[6] = {
-        {
-         {ZERO, WRITE_ONE, LEFT, 1},
-         {ONE, WRITE_ONE, RIGHT, 2},
-         },
-        {
-         {ZERO, WRITE_ONE, LEFT, 2},
-         {ONE, WRITE_ONE, LEFT, 1},
-         },
-        {
-         {ZERO, WRITE_ONE, LEFT, 3},
-         {ONE, WRITE_ZERO, RIGHT, 4},
-         },
-        {
-         {ZERO, WRITE_ONE, RIGHT, 0},
-         {ONE, WRITE_ONE, RIGHT, 3},
-         },
-        {
-         {ZERO, WRITE_ONE, LEFT, 5},
-         {ONE, WRITE_ZERO, RIGHT, 0},
-         },
-        {
-         {ZERO, WRITE_BLANK, HALT, 5},
-         {ONE, WRITE_ZERO, RIGHT, 0},
-         },
-    };
 
     size_t current_size = TAPE_SIZE;
-    enum symbol tape[current_size];
-    memset(tape, ZERO, current_size * sizeof(enum symbol));
+    Symbol *tape = calloc(current_size, sizeof(Symbol));
+    memset(tape, ZERO, current_size * sizeof(Symbol));
 
-    enum symbol *head = &tape[current_size / 2];
+    Symbol *head = &tape[current_size / 2];
     int state = 0;
     int steps = 0;
     int halt = 0;
 
-    for (int i = 0; i < 100; i++) {
-        struct state current = states[state];
+    while (!halt) {
+        struct State current = marxen_buntrock[state];
         printf("State: %d, Head: %d\n", state, head - tape);
-        struct condition condition = *head == ZERO ? current.zero : current.one;
-
-        if (condition.write != WRITE_BLANK) {
-            *head = condition.write;
-        };
+        struct Condition condition = *head == ZERO ? current.zero : current.one;
 
         if (condition.move == HALT) {
             halt = 1;
             break;
         }
 
-        printf("move: %d\n", condition.move);
+        *head = condition.write;
         head += condition.move;
         state = condition.state;
-        steps++;
 
-        if (head >= &tape[current_size]) {
+        if (head == &tape[0]) {
             current_size *= 2;
-            enum symbol new_tape[current_size];
-            memset(new_tape, ZERO, current_size * sizeof(enum symbol));
-            memcpy(new_tape + current_size / 4, tape,
-                   current_size / 2 * sizeof(enum symbol));
-            memcpy(tape, new_tape, current_size * sizeof(enum symbol));
-            head = &tape[current_size / 2 - 1];
+            tape = realloc(tape, current_size * sizeof(Symbol));
+            memmove(&tape[current_size / 2], &tape[0],
+                    current_size / 2 * sizeof(Symbol));
+            memset(&tape[0], ZERO, current_size / 2 * sizeof(Symbol));
+            head = &tape[current_size / 2];
+        } else if (head == &tape[current_size - 1]) {
+            current_size *= 2;
+            tape = realloc(tape, current_size * sizeof(Symbol));
+            memset(&tape[current_size / 2], ZERO,
+                   current_size / 2 * sizeof(Symbol));
         }
-        // printf("Steps: %d\n", steps);
 
+        steps++;
+        printf("Tape: ");
         for (int i = 0; i < current_size; i++) {
             printf("%d", tape[i]);
         }
         printf("\n");
-
-        for (int i = 0; i < current_size; i++) {
-            if (head == &tape[i]) {
-                printf("^");
-            } else {
-                printf(" ");
-            }
-        }
-        printf("\n");
+        printf("Steps: %d\n", steps);
     }
 };

@@ -5,9 +5,19 @@ set(C_COMPILE_FLAGS "-Wall -Wextra -Wpedantic -Werror -std=c11")
 include(CTest)
 enable_testing()
 
-add_executable(turing_simulator src/main.c)
+set(SOURCES
+    src/turing.c
+)
+
+set(HEADERS
+    src/turing.h
+)
+add_executable(turing_simulator src/main.c ${SOURCES} ${HEADERS})
 target_include_directories(turing_simulator PRIVATE src)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
+
+project(benchmarks)
+
