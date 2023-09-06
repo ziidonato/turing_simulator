@@ -1,5 +1,6 @@
 #pragma once
 #include <stddef.h>
+#include <stdint.h>
 
 typedef enum Direction {
     LEFT = -1,
@@ -32,12 +33,15 @@ typedef struct State {
 
 typedef struct Turing {
     size_t current_state;
-    size_t head;
+    Symbol *head;
     size_t size;
     size_t steps;
     State *states;
     Symbol *tape;
+    uint8_t halt;
 } Turing;
 
-Turing *turing_create(size_t size);
+Turing *turing_create(size_t size, State *states);
 void turing_destroy(Turing *turing);
+void turing_expand_tape(Turing *turing, Direction direction);
+void turing_iterate(Turing *turing);
