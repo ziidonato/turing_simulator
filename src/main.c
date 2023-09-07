@@ -8,51 +8,39 @@
 
 const State marxen_buntrock[6] = {
     {
-     {ZERO, WRITE_ONE, LEFT, 1},
-     {ONE, WRITE_ONE, RIGHT, 2},
+     {ZERO, ONE, LEFT, 1},
+     {ONE, ONE, RIGHT, 2},
      },
     {
-     {ZERO, WRITE_ONE, LEFT, 2},
-     {ONE, WRITE_ONE, LEFT, 1},
+     {ZERO, ONE, LEFT, 2},
+     {ONE, ONE, LEFT, 1},
      },
     {
-     {ZERO, WRITE_ONE, LEFT, 3},
-     {ONE, WRITE_ZERO, RIGHT, 4},
+     {ZERO, ONE, LEFT, 3},
+     {ONE, ZERO, RIGHT, 4},
      },
     {
-     {ZERO, WRITE_ONE, RIGHT, 0},
-     {ONE, WRITE_ONE, RIGHT, 3},
+     {ZERO, ONE, RIGHT, 0},
+     {ONE, ONE, RIGHT, 3},
      },
     {
-     {ZERO, WRITE_ONE, LEFT, 5},
-     {ONE, WRITE_ZERO, RIGHT, 0},
+     {ZERO, ONE, LEFT, 5},
+     {ONE, ZERO, RIGHT, 0},
      },
     {
-     {ZERO, WRITE_ONE, HALT, 5},
-     {ONE, WRITE_ZERO, RIGHT, 0},
+     {ZERO, ONE, HALT, 5},
+     {ONE, ZERO, RIGHT, 0},
      },
 };
 
-int main(int, char **)
+int main(void)
 {
 
     Turing *turing = turing_create(TAPE_SIZE, (State *)marxen_buntrock);
 
-    for (size_t i = 0; i < 50; i++) {
+    while (!turing->halt) {
+        // for (int i = 0; i < 1000000; i++) {
         turing_iterate(turing);
-        printf("Step %zu: \n", turing->steps);
-        for (size_t i = 0; i < turing->size; i++) {
-            printf("%d", turing->tape[i]);
-        }
-        printf("\n");
-
-        for (size_t i = 0; i < turing->size; i++) {
-            if (&turing->tape[i] == turing->head) {
-                printf("^");
-            } else {
-                printf(" ");
-            }
-        }
-        printf("\n\n");
+        // turing_print_tape(turing);
     }
-};
+}

@@ -14,14 +14,9 @@ typedef enum Symbol {
     ONE = 1,
 } Symbol;
 
-typedef enum Write {
-    WRITE_ZERO = 0,
-    WRITE_ONE = 1,
-} Write;
-
 typedef struct Condition {
     Symbol read;
-    Write write;
+    Symbol write;
     Direction move;
     size_t state_index;
 } Condition;
@@ -45,3 +40,5 @@ Turing *turing_create(size_t size, State *states);
 void turing_destroy(Turing *turing);
 void turing_expand_tape(Turing *turing, Direction direction);
 void turing_iterate(Turing *turing);
+void turing_print_tape(Turing *turing);
+State *turing_parse_states(const char *states);

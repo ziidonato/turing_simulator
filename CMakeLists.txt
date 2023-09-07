@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(turing_simulator VERSION 0.1.0 LANGUAGES C)
-set(C_COMPILE_FLAGS "-Wall -Wextra -Wpedantic -Werror -std=c11")
+add_compile_options(-Wall -Wextra -Wpedantic -Werror -std=c11 -pg)
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
+SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
+SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pg")
 
 include(CTest)
 enable_testing()

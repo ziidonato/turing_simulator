@@ -1,4 +1,5 @@
 #include "turing.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -29,17 +30,14 @@ void turing_expand_tape(Turing *turing, Direction direction)
 
     Symbol *old_tape = turing->tape;
     size_t old_size = turing->size / 2;
-    size_t offset = old_size / 2;
     Symbol *new_tape = &turing->tape[turing->size / 2];
 
     memset(new_tape, ZERO, old_size * sizeof(Symbol));
-    memmove(old_tape + offset, old_tape, old_size * sizeof(Symbol));
-    memset(&turing->tape[0], ZERO, offset * sizeof(Symbol));
 
     if (direction == LEFT) {
-        turing->head = &turing->tape[offset];
-    } else if (direction == RIGHT) {
-        turing->head = &turing->tape[turing->size - offset - 1];
+        memmove(new_tape, old_tape, old_size * sizeof(Symbol));
+        memset(old_tape, ZERO, old_size * sizeof(Symbol));
+        turing->head = new_tape;
     }
 }
 
@@ -64,4 +62,16 @@ void turing_iterate(Turing *turing)
     }
 
     turing->steps++;
+}
+
+void turing_print_tape(Turing *turing)
+{
+    for (size_t i = 0; i < turing->size; i++) {
+        if (turing->head == &turing->tape[i]) {
+            printf("H");
+        } else {
+            printf("%d", turing->tape[i]);
+        }
+    }
+    printf("\n");
 }
